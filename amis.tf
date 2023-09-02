@@ -1,5 +1,9 @@
 data "aws_ami_ids" "amis" {
   owners = ["self"]
+  filter {
+    name   = "block-device-mapping.encrypted"
+    values = ["false"]
+  }
 }
 
 output "amis" {

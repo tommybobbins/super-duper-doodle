@@ -17,8 +17,8 @@ resource "aws_iam_policy" "gcp_amireader_s3" {
           "s3:ListBucketMultipartUploads"
         ],
         "Resource" : [
-          "arn:aws:s3:::${var.bucket_name}/*",
-          "arn:aws:s3:::${var.bucket_name}"
+          "arn:aws:s3:::${aws_s3_bucket.ami_bucket.id}/*",
+          "arn:aws:s3:::${aws_s3_bucket.ami_bucket.id}"
         ]
       }
     ]
@@ -34,9 +34,11 @@ resource "aws_iam_access_key" "gcp_amireader_s3" {
 }
 
 resource "aws_secretsmanager_secret" "gcp_amireader_s3" {
-  count       = var.store_secret_creds ? 1 : 0
-  name        = "gcp-amireader-s3"
-  description = "AWS Credentials to allow GCP to read the AMIs from ${var.bucket_name}"
+  count                   = var.store_secret_creds ? 1 : 0
+  name                    = "gcp-amireader-s3"
+  description             = "AWS Credentials to allow GCP to read the AMIs from ${var.bucket_name}"
+  recovery_window_in_days = "0"
+
 }
 
 resource "aws_secretsmanager_secret_version" "gcp_amireader_s3" {

@@ -17,6 +17,7 @@ resource "aws_iam_role" "vmimport" {
    ]
 }
 EOF
+  depends_on         = [aws_s3_bucket.ami_bucket]
 }
 
 resource "aws_iam_policy" "vmimport" {
