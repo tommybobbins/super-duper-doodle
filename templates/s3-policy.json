@@ -1,0 +1,17 @@
+{
+"Version": "2012-10-17",
+"Statement": [
+    {
+        "Sid": "Stmt1476979061000",
+        "Effect": "Allow",
+        "Principal": {
+            "AWS": "arn:aws:iam::$ACCOUNT:user/$USER"
+        },
+        "Action": "s3:*",
+        "Resource": [
+            "arn:aws:s3:::$BUCKET",
+            "arn:aws:s3:::$BUCKET/*"
+        ]
+    }
+]}
+
