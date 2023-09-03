@@ -8,6 +8,37 @@ When run using encrpyed AMIs, it would return the following, so this is only bei
 An error occurred (InvalidParameter) when calling the ExportImage operation: The image ID (ami-<id>) provided has encrypted EBS block devices and is not exportable.
 ```
 
+# AWS Debian instance
+
+## Output of the neofetch after EC2 creation in AWS
+
+![neofetch-output-debian](images/neofetch_debian_aws.png)
+
+```
+       _,met$$$$$gg.          root@ip-10-23-23-103 
+    ,g$$$$$$$$$$$$$$$P.       -------------------- 
+  ,g$$P"     """Y$$.".        OS: Debian GNU/Linux 11 (bullseye) x86_64 
+ ,$$P'              `$$$.     Host: t3.nano 
+',$$P       ,ggs.     `$$b:   Kernel: 5.10.0-11-cloud-amd64 
+`d$$'     ,$P"'   .    $$$    Uptime: 6 mins 
+ $$P      d$'     ,    $$P    Packages: 391 (dpkg) 
+ $$:      $$.   -    ,d$$'    Shell: bash 5.1.4 
+ $$;      Y$b._   _,d$P'      CPU: Intel Xeon Platinum 8259CL (2) @ 2.499GHz 
+ Y$$.    `.`"Y$$$$P"'         GPU: 00:03.0 Amazon.com, Inc. Device 1111 
+ `$$b      "-.__              Memory: 63MiB / 453MiB 
+  `Y$$
+   `Y$$.                                              
+     `$$b.                                            
+       `Y$$b.
+          `"Y$b._
+              `"""
+
+```
+
+
+
+
+
 https://repost.aws/knowledge-center/create-unencrypted-volume-kms-key
 
 # Building a decrypted volume from an encrypted one.
@@ -93,7 +124,7 @@ $ aws ec2 describe-export-image-tasks --export-image-task-ids export-ami-07b027f
 ```
 # After 15 minutes
 ```
-aws ec2 describe-export-image-tasks --export-image-task-ids export-ami-07b027f4b1a649986 --region=eu-west-2
+$ aws ec2 describe-export-image-tasks --export-image-task-ids export-ami-07b027f4b1a649986 --region=eu-west-2
 {
     "ExportImageTasks": [
         {
@@ -130,10 +161,17 @@ $ aws sts get-session-token --duration-seconds 3600
     }
 }
 
-$ export AWS_ACCESS_KEY_ID="Access key stuff above"
-$ export AWS_SECRET_ACCESS_KEY="Secret stuff above"
-$ export AWS_SESSION_TOKEN="Session stuff above"
-$ gcloud beta compute images import homer-from-aws --aws-access-key-id="$AWS_ACCESS_KEY_ID" --aws-region=eu-west-2 --aws-secret-access-key="$AWS_SECRET_ACCESS_KEY" --aws-session-token="$AWS_SESSION_TOKEN" --aws-ami-export-location=s3://super-duper-doodle20230902122013511700000001/exports/export-ami-07b027f4b1a649986.vhd --os=debian-11
+
+## Switch to the session token credentials from the above
+
+```
+$ export AWS_ACCESS_KEY_ID="Access key stuff"
+$ export AWS_SECRET_ACCESS_KEY="Secret stuff"
+$ export AWS_SESSION_TOKEN="Session stuff"
+$ aws s3 ls s3://super-duper-doodle20230903081041864300000001/exports/
+2023-09-03 10:31:55 1636196352 export-ami-021a37cd1e7f3d240.vhd
+$ export S3_BUCKET_LOCATION="s3://super-duper-doodle20230903081041864300000001/exports/export-ami-021a37cd1e7f3d240.vhd"
+$ gcloud beta compute images import debian-11-test-image --aws-access-key-id="$AWS_ACCESS_KEY_ID" --aws-region=eu-west-2 --aws-secret-access-key="$AWS_SECRET_ACCESS_KEY" --aws-session-token="$AWS_SESSION_TOKEN" --aws-source-ami-file-path="$S3_BUCKET_LOCATION"
 WARNING: Importing image. This may take up to 2 hours.
 The "cloudbuild.googleapis.com" service is not enabled for this project. It is required for this operation.
 
@@ -153,22 +191,23 @@ starting build "1234567-0953-4f4c-a5a1-92483483cabe"
 [onestep-import-image-aws] 2023/09/02 18:46:05 Copying s3://super-duper-doodle20230902122013511700000001/exports/export-ami-07b027f4b1a649986.vhd to gs://bibbly-bobbly-123456-daisy-bkt/onestep-image-import-aws-gnx36.vmdk.
 [onestep-import-image-aws] 2023/09/02 18:46:10 Total written size: 95 MiB of 20 GiB.
 [onestep-import-image-aws] 2023/09/02 18:46:14 Total written size: 191 MiB of 20 GiB.
-[onestep-import-image-aws] 2023/09/02 18:46:17 Total written size: 286 MiB of 20 GiB.
-[onestep-import-image-aws] 2023/09/02 18:46:21 Total written size: 382 MiB of 20 GiB.
-[onestep-import-image-aws] 2023/09/02 18:46:25 Total written size: 477 MiB of 20 GiB.
-[onestep-import-image-aws] 2023/09/02 18:46:29 Total written size: 572 MiB of 20 GiB.
-[onestep-import-image-aws] 2023/09/02 18:46:31 Total written size: 668 MiB of 20 GiB.
-[onestep-import-image-aws] 2023/09/02 18:46:34 Total written size: 763 MiB of 20 GiB.
-[onestep-import-image-aws] 2023/09/02 18:46:54 Total written size: 1.4 GiB of 20 GiB.
-[onestep-import-image-aws] 2023/09/02 18:46:58 Total written size: 1.5 GiB of 20 GiB.
-[onestep-import-image-aws] 2023/09/02 18:47:01 Total written size: 1.6 GiB of 20 GiB.
-[onestep-import-image-aws] 2023/09/02 18:47:03 Total written size: 1.7 GiB of 20 GiB.
-....
 [onestep-import-image-aws] 2023/09/02 18:56:49 Successfully copied to gs://bibbly-bobbly-123456-daisy-bkt/onestep-image-import-aws-gnx36.vmdk in 10m43.80993304s.
 [onestep-import-image-aws] 2023/09/02 18:56:49 Starting to import image ...
-[onestep-import-image-aws] 2023/09/02 18:56:49 Running command: '/gce_vm_image_import -image_name=homer-from-aws -client_id=gcloud -client_version= -os=debian-11 -source_file=gs://bibbly-bobbly-123456-daisy-bkt/onestep-image-import-aws-gnx36.vmdk -no_guest_environment=false -family= -description= -network= -subnet= -zone= -timeout=1h45m38.751281166s -project=bibbly-bobbly-123456 -scratch_bucket_gcs_path=gs://bibbly-bobbly-123456-daisy-bkt/ -oauth= -compute_endpoint_override= -compute_service_account= -disable_gcs_logging=false -disable_cloud_logging=false -disable_stdout_logging=false -no_external_ip=false -enable_nested_virtualization=true -labels=onestep-image-import=aws -storage_location='
 [import-image]: 2023-09-02T18:56:50Z Inspecting the image file...
 [import-image]: 2023-09-02T18:57:59Z Creating Google Compute Engine disk from gs://bibbly-bobbly-123456-daisy-bkt/onestep-image-import-aws-gnx36.vmdk
-...
+[import-image]: 2023-09-03T11:05:02Z Inspection result=os_release:{cli_formatted:"debian-11"  distro:"debian"  major_version:"11"  minor_version:"2"  architecture:X64  distro_id:DEBIAN}  bios_bootable:true  uefi_bootable:true  elapsed_time_ms:76617  os_count:1
+[import-image]: 2023-09-03T11:05:02Z The boot disk can boot with either BIOS or a UEFI bootloader. The default setting for booting is BIOS. If you want to boot using UEFI, please see https://cloud.google.com/compute/docs/import/importing-virtual-disks#importing_a_virtual_disk_with_uefi_bootloader'.
+[import-image]: 2023-09-03T11:05:19Z Making disk bootable on Google Compute Engine
+[import-image]: 2023-09-03T11:10:59Z Finished making disk bootable
+[onestep-import-image-aws] 2023/09/03 11:11:00 Image import from AWS finished successfully!
+[onestep-import-image-aws] 2023/09/03 11:11:00 Cleaning up ...
+[onestep-import-image-aws] 2023/09/03 11:11:00 Deleting content of: gs://bibbly-bobbly-123456-daisy-bkt/onestep-image-import-aws-lt1jl.vmdk
+[onestep-import-image-aws]: 2023-09-03T11:11:00Z Deleting gs://bibbly-bobbly-123456-daisy-bkt/onestep-image-import-aws-lt1jl.vmdk
 
 ``` 
+# Start instance in GCP
+
+![Start in GCP](images/gcloud_import.png)
+
+Check that this is the same image as we previously installed neofetch: ![neofetch-output-gcp](images/neofetch_debian_gcp.png)
+
