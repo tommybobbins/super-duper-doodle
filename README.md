@@ -210,5 +210,7 @@ starting build "1234567-0953-4f4c-a5a1-92483483cabe"
 
 ![Start in GCP](images/gcloud_import.png)
 
-Check that this is the same image as we previously installed neofetch: ![neofetch-output-gcp](images/neofetch_debian_gcp.png)
+##Check this is the same image.
+
+We previously installed neofetch so this should return similar results in GCP as AWS: ![neofetch-output-gcp](images/neofetch_debian_gcp.png)
 
