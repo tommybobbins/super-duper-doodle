@@ -160,6 +160,7 @@ $ aws sts get-session-token --duration-seconds 3600
         "Expiration": "2023-09-02T18:08:59+00:00"
     }
 }
+```
 
 
 ## Switch to the session token credentials from the above
